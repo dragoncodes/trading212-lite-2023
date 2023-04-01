@@ -1,10 +1,11 @@
+import React from "react"
 import { StyleSheet, View } from "react-native"
-import { SignupForm } from "./signup/SignupForm"
+import { SignupFlow } from "./signup/SingupFlow"
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <SignupForm />
+      <SignupFlow />
     </View>
   )
 }
