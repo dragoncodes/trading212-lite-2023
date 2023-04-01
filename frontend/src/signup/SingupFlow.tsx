@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react"
-import { Button, Text, TextInput, View } from "react-native"
+import { Button, TextInput, View } from "react-native"
+import { EpicTextInput } from "./EpicTextInput"
 import { SignupFlowConfig } from "./SignupFlow"
 
 function SingupFlowStepCustomerDetails(props: { onNextPress: () => void }) {
@@ -7,11 +8,39 @@ function SingupFlowStepCustomerDetails(props: { onNextPress: () => void }) {
     props.onNextPress()
   }, [])
 
+  const [firstName, setFirstName] = useState("")
+
+  const [givenName, setGivenName] = useState("")
+
   return (
     <View>
-      <Text>Country</Text>
-      <Text>First name</Text>
-      <Text>Given names</Text>
+      <EpicTextInput
+        label="First name"
+        onChangeText={(text) => {
+          setFirstName(text)
+        }}
+        textInputProps={{
+          textContentType: "name",
+          autoCapitalize: "words",
+        }}
+        style={{
+          marginVertical: 40,
+        }}
+      />
+
+      <EpicTextInput
+        label="Given name"
+        onChangeText={(text) => {
+          setGivenName(text)
+        }}
+        textInputProps={{
+          textContentType: "givenName",
+          autoCapitalize: "words",
+        }}
+        style={{
+          marginBottom: 20,
+        }}
+      />
 
       <Button title="Next" onPress={onPress} />
     </View>
@@ -31,7 +60,7 @@ function SignupFlowStepLoginDetails(props: { onNextPress: () => void }) {
 
       <TextInput textContentType="password" placeholder="Repeat Password" />
 
-      <Button title="Next" onPress={onPress} />
+      <Button title="Sign up" onPress={onPress} />
     </View>
   )
 }
