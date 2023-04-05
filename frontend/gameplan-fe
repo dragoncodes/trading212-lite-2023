@@ -1,0 +1,18 @@
+- Image drawing (Maybe <Image> component)
+
+- Container by rows (white background, rounded edges)
+
+- Text (Log in) bolded bigger font
+
+- EpicTextInput (Hint hides when start entering text)  
+  - How to enable secure input ??
+  - clear text icon
+
+- EpicButton (props: {backgroundColor, text, style}) + optional: loader in the button
+
+- Signup button (maybe EpicButton??)
+
+- EpicDropdown (hint, label)
+
+- Validate selected country on next press
+
