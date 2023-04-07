@@ -1,9 +1,25 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { Button, TextInput, View } from "react-native"
+import { AppConfig } from "../config"
+import { CountriesDropdown } from "./CountriesDropdown"
 import { EpicTextInput } from "./EpicTextInput"
 import { SignupFlowConfig } from "./SignupFlow"
 
 function SingupFlowStepCustomerDetails(props: { onNextPress: () => void }) {
+  const [countries, setCountries] = useState([])
+
+  const fetchCountries = useCallback(async () => {
+    const response = await fetch(`${AppConfig.CUSTOMER_SERVICE_URL}/countries`)
+
+    const countries = await response.json()
+
+    setCountries(countries)
+  }, [])
+
+  useEffect(() => {
+    fetchCountries()
+  }, [])
+
   const onPress = useCallback(() => {
     props.onNextPress()
   }, [])
@@ -14,6 +30,8 @@ function SingupFlowStepCustomerDetails(props: { onNextPress: () => void }) {
 
   return (
     <View>
+      <CountriesDropdown countries={countries} />
+
       <EpicTextInput
         label="First name"
         onChangeText={(text) => {

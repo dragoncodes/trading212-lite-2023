@@ -2,7 +2,7 @@
   "name": "trading212-lite",
   "version": "1.0.0",
   "scripts": {
-    "start": "cd frontend && npx expo start --web"
+    "start": "cd frontend && CUSTOMER_SERVICE_URL=localhost:4242 npx expo start --web"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
@@ -14,5 +14,8 @@
     "frontend",
     "customer-service"
   ],
-  "private": true
+  "private": true,
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  }
 }
