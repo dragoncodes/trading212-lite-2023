@@ -1,6 +1,7 @@
 import { CountryT } from "customer-commons"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import {
+  Animated,
   FlatList,
   ListRenderItemInfo,
   Pressable,
@@ -13,8 +14,16 @@ import {
 export function CountriesDropdown(props: { countries: CountryT[] }) {
   const [isCountriesListVisible, setIsCountriesListVisible] = useState(false)
 
+  const dropdownFadeAnimationValue = useRef(new Animated.Value(0)).current
+
   const onPress = useCallback(() => {
     setIsCountriesListVisible(!isCountriesListVisible)
+
+    Animated.timing(dropdownFadeAnimationValue, {
+      toValue: !isCountriesListVisible ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start()
   }, [isCountriesListVisible])
 
   const onCountryPress = useCallback(() => {}, [])
@@ -23,6 +32,7 @@ export function CountriesDropdown(props: { countries: CountryT[] }) {
     (): StyleProp<ViewStyle> => ({
       borderWidth: 1,
       borderColor: "##747980",
+      zIndex: 100,
     }),
     []
   )
@@ -38,14 +48,36 @@ export function CountriesDropdown(props: { countries: CountryT[] }) {
     ),
     []
   )
+
+  const countriesContainerStyle = useMemo(
+    (): StyleProp<ViewStyle> => ({
+      position: "absolute",
+      maxHeight: 400,
+      zIndex: 1337,
+      left: 0,
+      right: 0,
+      top: 20,
+    }),
+    []
+  )
+
   const maybeRenderList = useCallback(() => {
-    return isCountriesListVisible ? (
-      <FlatList
-        data={props.countries}
-        renderItem={renderCountryItem}
-        keyExtractor={(country) => country.code}
-      />
-    ) : null
+    return (
+      <Animated.View
+        style={[
+          countriesContainerStyle,
+          {
+            opacity: dropdownFadeAnimationValue,
+          },
+        ]}
+      >
+        <FlatList
+          data={props.countries}
+          renderItem={renderCountryItem}
+          keyExtractor={(country) => country.code}
+        />
+      </Animated.View>
+    )
   }, [props.countries, isCountriesListVisible])
 
   return (
