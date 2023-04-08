@@ -1,5 +1,7 @@
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
+  Animated,
+  Easing,
   StyleProp,
   StyleSheet,
   Text,
@@ -17,6 +19,16 @@ export function EpicTextInput(props: {
   style?: StyleProp<ViewStyle>
   textInputProps?: Omit<React.ComponentProps<typeof TextInput>, "onChangeText">
 }) {
+  // On mount
+  useEffect(() => {
+    // on did unmount
+    return () => {
+      cancelAnimation.current?.()
+    }
+  }, [])
+
+  const cancelAnimation = useRef<(() => void) | undefined>(undefined)
+
   const containerStyle = useMemo(
     (): StyleProp<ViewStyle> => [
       {
@@ -37,19 +49,53 @@ export function EpicTextInput(props: {
 
   const [isFocused, setIsFocused] = useState(false)
 
+  const labelOffsetAnimation = useRef(new Animated.Value(0)).current
+
   const onFocus = useCallback(() => {
     setIsFocused(true)
+
+    const animation = Animated.timing(labelOffsetAnimation, {
+      toValue: 1,
+      duration: 150,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    })
+
+    cancelAnimation.current = animation.stop
+
+    animation.start()
   }, [])
 
   const onBlur = useCallback(() => {
     setIsFocused(false)
+
+    const animation = Animated.timing(labelOffsetAnimation, {
+      toValue: 0,
+      duration: 150,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    })
+
+    animation.start()
+
+    cancelAnimation.current = animation.stop
   }, [])
+
+  const animatedStyle = useMemo(
+    () => ({
+      marginBottom: labelOffsetAnimation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-20, 10],
+      }),
+    }),
+    []
+  )
 
   return (
     <View style={containerStyle}>
-      {isFocused ? null : (
-        <Text style={{ marginBottom: -15 }}>{props.label}</Text>
-      )}
+      <Animated.View style={animatedStyle}>
+        <Text>{props.label}</Text>
+      </Animated.View>
 
       <TextInput
         onFocus={onFocus}
