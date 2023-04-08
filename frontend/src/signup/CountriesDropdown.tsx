@@ -1,3 +1,4 @@
+import { CountryT } from "customer-commons"
 import { useCallback, useMemo, useState } from "react"
 import {
   FlatList,
@@ -8,7 +9,6 @@ import {
   View,
   ViewStyle,
 } from "react-native"
-import { CountryT } from "./models/Country"
 
 export function CountriesDropdown(props: { countries: CountryT[] }) {
   const [isCountriesListVisible, setIsCountriesListVisible] = useState(false)

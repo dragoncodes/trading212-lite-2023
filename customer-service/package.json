@@ -20,6 +20,7 @@
     "@types/express-session": "^1.17.7",
     "bcrypt": "^5.1.0",
     "express-session": "^1.17.3",
-    "uuidv4": "^6.2.13"
+    "uuidv4": "^6.2.13",
+    "customer-commons": "../customer-commons"
   }
 }
