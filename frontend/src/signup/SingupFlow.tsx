@@ -1,12 +1,19 @@
-import React, { useCallback, useEffect, useState } from "react"
+import { CountryT } from "customer-commons"
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import { Button, TextInput, View } from "react-native"
 import { AppConfig } from "../config"
-import { CountriesDropdown } from "./CountriesDropdown"
+import { CountriesDropdown } from "./CountriesDropdown.web"
 import { EpicTextInput } from "./EpicTextInput"
 import { SignupFlowConfig } from "./SignupFlow"
+import {
+  SignupFlowContext,
+  SignupFlowContextProvider,
+} from "./SignupFlowContext"
 
 function SingupFlowStepCustomerDetails(props: { onNextPress: () => void }) {
-  const [countries, setCountries] = useState([])
+  const [countries, setCountries] = useState<CountryT[]>([])
+
+  const [_, setUserData] = useContext(SignupFlowContext)
 
   const fetchCountries = useCallback(async () => {
     const response = await fetch(`${AppConfig.CUSTOMER_SERVICE_URL}/countries`)
@@ -20,17 +27,57 @@ function SingupFlowStepCustomerDetails(props: { onNextPress: () => void }) {
     fetchCountries()
   }, [])
 
-  const onPress = useCallback(() => {
-    props.onNextPress()
-  }, [])
-
   const [firstName, setFirstName] = useState("")
 
   const [givenName, setGivenName] = useState("")
 
+  const [selectedCountryCode, setSelectedCountryCode] = useState("")
+
+  const onCountryPress = useCallback((countryCode: CountryT["code"]) => {
+    setSelectedCountryCode(countryCode)
+  }, [])
+
+  const onPress = useCallback(() => {
+    const country = countries.find(
+      (country) => selectedCountryCode === country.code
+    )
+
+    if (!country) {
+      alert("Unknown country!")
+
+      return
+    }
+
+    if (!country.isSupported) {
+      alert("Country not supported")
+
+      return
+    }
+
+    if (!firstName) {
+      alert("Please enter your first name")
+
+      return
+    }
+
+    if (!givenName) {
+      alert("Please enter your given name")
+
+      return
+    }
+
+    setUserData({
+      countryCode: selectedCountryCode,
+      firstName,
+      givenName,
+    })
+
+    props.onNextPress()
+  }, [selectedCountryCode, firstName, givenName, props.onNextPress, countries])
+
   return (
     <View>
-      <CountriesDropdown countries={countries} />
+      <CountriesDropdown countries={countries} onPress={onCountryPress} />
 
       <EpicTextInput
         label="First name"
@@ -70,6 +117,10 @@ function SignupFlowStepLoginDetails(props: { onNextPress: () => void }) {
     props.onNextPress()
   }, [])
 
+  const [userData, setUserData] = useContext(SignupFlowContext)
+
+  console.log("UserData===========", userData)
+
   return (
     <View>
       <TextInput textContentType="emailAddress" placeholder="Email" />
@@ -99,14 +150,16 @@ export function SignupFlow() {
   }, [currentStep])
 
   return (
-    <View>
-      {currentStep === 0 ? (
-        <SingupFlowStepCustomerDetails onNextPress={onNextPress} />
-      ) : null}
+    <SignupFlowContextProvider>
+      <View>
+        {currentStep === 0 ? (
+          <SingupFlowStepCustomerDetails onNextPress={onNextPress} />
+        ) : null}
 
-      {currentStep === 1 ? (
-        <SignupFlowStepLoginDetails onNextPress={onNextPress} />
-      ) : null}
-    </View>
+        {currentStep === 1 ? (
+          <SignupFlowStepLoginDetails onNextPress={onNextPress} />
+        ) : null}
+      </View>
+    </SignupFlowContextProvider>
   )
 }
