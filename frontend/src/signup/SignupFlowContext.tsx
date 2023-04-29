@@ -3,10 +3,8 @@ import { createContext, useState } from "react"
 
 type SignupFlowDataT = {
   countryCode: CountryT["code"]
-  firstName: string
   givenName: string
-
-  email: string
+  lastName: string
 }
 
 type SignupFlowContextT = [

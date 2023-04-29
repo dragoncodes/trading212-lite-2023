@@ -1,11 +1,14 @@
 import bcrypt from "bcrypt";
+import cors from "cors";
+import {
+  containsOnlyLatinCharacters,
+  isValidEmailStructure,
+} from "customer-commons";
 import express, { Express, Request, Response } from "express";
 import session from "express-session";
 import { uuid } from "uuidv4";
 import { Countries } from "./repositories/Countries";
 import CustomersFileRepository from "./repositories/Customers";
-import { isValidishEmail } from "./validations/email";
-import { containsOnlyLatinCharacters } from "./validations/names";
 
 const app: Express = express();
 const port = 4242;
@@ -24,6 +27,7 @@ declare module "express-session" {
 }
 
 app.use(express.json());
+app.use(cors());
 app.use(session(sessionConfig));
 
 app.get("/", (req: Request, res: Response) => {
@@ -45,6 +49,9 @@ app.post("/customers", async (req: Request, res: Response) => {
   if (!givenNames) {
     return res.status(400).json({ type: "MissingGivenNames" });
   }
+
+  console.log("3===========");
+
   if (!containsOnlyLatinCharacters(givenNames)) {
     return res.status(400).json({ type: "InvalidGivenNames" });
   }
@@ -64,7 +71,7 @@ app.post("/customers", async (req: Request, res: Response) => {
     return res.status(400).json({ type: "MissingEmail" });
   }
 
-  if (!isValidishEmail(email)) {
+  if (!isValidEmailStructure(email)) {
     return res.status(400).json({ type: "InvalidEmail" });
   }
 

@@ -1,9 +1,10 @@
 {
   "name": "customer-commons",
-  "version": "0.0.1",
-  "description": "Common customer related types and validations",
-  "main": "index.js",
+  "version": "1.0.0",
+  "description": "Common types and validations related to the customer",
+  "main": "./dist/index.js",
   "scripts": {
+    "build": "rm -rf dist && tsc -b",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

@@ -49,6 +49,8 @@ export function EpicTextInput(props: {
 
   const [isFocused, setIsFocused] = useState(false)
 
+  const [value, setValue] = useState("")
+
   const labelOffsetAnimation = useRef(new Animated.Value(0)).current
 
   const onFocus = useCallback(() => {
@@ -69,6 +71,10 @@ export function EpicTextInput(props: {
   const onBlur = useCallback(() => {
     setIsFocused(false)
 
+    if (value) {
+      return
+    }
+
     const animation = Animated.timing(labelOffsetAnimation, {
       toValue: 0,
       duration: 150,
@@ -79,7 +85,7 @@ export function EpicTextInput(props: {
     animation.start()
 
     cancelAnimation.current = animation.stop
-  }, [])
+  }, [value])
 
   const animatedStyle = useMemo(
     () => ({
@@ -89,6 +95,15 @@ export function EpicTextInput(props: {
       }),
     }),
     []
+  )
+
+  const onChange = useCallback(
+    (text: string) => {
+      setValue(text)
+
+      props.onChangeText(text)
+    },
+    [props.onChangeText]
   )
 
   return (
@@ -101,7 +116,7 @@ export function EpicTextInput(props: {
         onFocus={onFocus}
         onBlur={onBlur}
         style={textInputStyle}
-        onChangeText={props.onChangeText}
+        onChangeText={onChange}
         {...props.textInputProps}
       />
 
